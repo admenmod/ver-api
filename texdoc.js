@@ -26,7 +26,7 @@
 			"type" : "function",
 			"source" : "ver.random",
 			"syntax" : "random(min: number, max: number);",
-			"description" : "Возвращаяет случайное значение из диапазон.",
+			"description" : "Возвращаяет случайное значение из диапазона.",
 			"params" : {
 				"min: number" : " - минимальное значение",
 				"max: number" : " - максимальное значение"
@@ -162,9 +162,18 @@
 			"source" : "* ver.CanvasLayer",
 			"syntax" : "new CanvasLayer();",
 			"description" : "...",
-			"params" : {},
 			"return" : "CanvasLayer",
-			"example" : "..."
+			"example" : "html:\n  &lt;canvas-layer&gt;\n\ncss:\n  canvas-layer {\n    background: #333333;\n  }\n\njs:\n  let canvas = document.querySelector('canvas-layer');",
+			
+			"methods" : [{
+				"name" : "get|set width",
+				"source" : ".width",
+				"type" : "function",
+				"syntax" : "canvas.width // canvas width",
+				"description" : "...",
+				"params" : {},
+				"return" : "number"
+			}]
 		}
 	];
 	
@@ -175,30 +184,36 @@
 		return t;
 	};
 	
+	let parseApi = api => {
+		let t = '';
+		
+		for(let item of api) { t += `<div class="item item-type-${item.type === 'class' ? 'class' : 'function'}">
+			<details>
+				<summary><div class="item-name">${item.source}</div></summary>
+				<hr>
+				${item.syntax ? `<div class="item-syntax"><pre>${item.syntax}</pre></div>` : ''}
+				${item.params ? `<div class="item-params">${parseParams(item)}</div>` : ''}
+				${item.return ? `<div class="item-return"><span style="color: #ee4444; font-weight: bolder;">return</span> ${item.return}</div>` : ''}
+				<div class="item-description">${item.description}</div>
+				${item.example ? `<fieldset class="item-example-fieldset">
+					<legend class="item-example-legend">${item.name}</legend>
+					<pre>${item.example}</pre>
+				</fieldset>` : ''}
+				<br>
+				<br>
+				${item.methods ? `<div class="item-methods">${parseApi(item.methods)}</div>` : ''}
+			</details>
+			<hr>
+			</div>`;
+		};
+		
+		return t;
+	};
+	
 	
 	let winEl = document.createElement('div');
 	winEl.classList.add('win');
 	
-	let winc = '';
-	for(let item of api) {
-		winc += `<div class="item item-type-${item.type === 'class' ? 'class' : 'function'}">
-			<details>
-			<summary><div class="item-name">${item.source}</div></summary>
-			<hr>
-			<div class="item-syntax"><pre>${item.syntax}</pre></div>
-			<div class="item-params">${parseParams(item)}</div>
-			<div class="item-return"><span style="color: #ee4444; font-weight: bolder;">return</span> ${item.return}</div>
-			<div class="item-description">${item.description}</div>
-			<fieldset class="item-example-fieldset">
-				<legend class="item-example-legend">${item.name}</legend>
-				<pre>${item.example}</pre>
-			</fieldset>
-			</details>
-			<hr>
-		</div>`;
-	};
-	
-	winEl.innerHTML = winc;
-	
+	winEl.innerHTML = parseApi(api);
 	document.body.append(winEl);
 })();
